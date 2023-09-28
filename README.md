@@ -39,7 +39,13 @@ The analysis path consists of the following steps:
     5. q-values and local False Discovery Rate values are estimated for FDR control.
 5.additionally, breakinspectoR implements a complimentary [and elaborated] method to estimate the false discovery of targets. To summarize, breakinspectoR reshuffles the signal in the target library using several multinomially distributed random number vectors sampled with equal probabilities to the signal in the originally detected offtargets. Then, breakinspectoR analysis is done in the reshuffled target library vs. the non-target library, and an FDR is estimated comparing the signal of each offtarget called in the original target library to the targets detected in the reshuffled target library (where no targets were expected to be called).
 6. breakinspectoR includes several handy visualizations to further analyze and summarize the on-/off-targets detected. Some of these functions include the analysis of fidelity of the gDNA, sequence composition of target regions, frequency of mismatches per position of the protospacer, or the genomic distribution of the targeted regions. 
-                  
+
+## Installation
+Open R and install directly from Github with `devtools` (install the package `devtools` if you haven't, yet):
+```R
+devtools::install_github("roukoslab/breakinspectoR")
+```
+
 ## Example usage
 
 This is a simple example using the demo data for human chr6 included with the package.
