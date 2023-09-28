@@ -1,0 +1,38 @@
+Package: breakinspectoR
+Type: Package
+Title: Identification of CRISPR offtargets by BreakTag
+Version: 0.1.0
+Author: Sergi Sayols <sergisayolspuig@gmail.com>
+Maintainer: Sergi Sayols <sergisayolspuig@gmail.com>
+Description: Companion package to the BreakTag protocol for the identification
+    of CRISPR offtargets.
+License: GPL-3 + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: GenomicRanges
+Imports: BSgenome,
+         Biostrings,
+         GenomeInfoDb,
+         S4Vectors,
+         rtracklayer,
+         ggplot2,
+         pheatmap,
+         viridis,
+         reshape2,
+         scales,
+         IRanges,
+         methods,
+         qvalue,
+         parallel
+Suggests: BiocStyle,
+          knitr,
+          rmarkdown,
+          testthat,
+          BSgenome.Hsapiens.UCSC.hg38,
+          BSgenome.Hsapiens.UCSC.hg19,
+          BSgenome.Mmusculus.UCSC.mm10,
+          BSgenome.Mmusculus.UCSC.mm9
+RoxygenNote: 7.2.0
+NeedsCompilation: no
+VignetteBuilder: knitr
+biocViews: Software, Technology, Sequencing, CRISPR, Coverage, PeakDetection
