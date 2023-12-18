@@ -32,7 +32,7 @@ Suggests: BiocStyle,
           BSgenome.Hsapiens.UCSC.hg19,
           BSgenome.Mmusculus.UCSC.mm10,
           BSgenome.Mmusculus.UCSC.mm9
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 NeedsCompilation: no
 VignetteBuilder: knitr
 biocViews: Software, Technology, Sequencing, CRISPR, Coverage, PeakDetection

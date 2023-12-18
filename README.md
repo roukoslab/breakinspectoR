@@ -110,3 +110,47 @@ chr6  150263  150264  .  1  +
 ```
 
 These files are typically created with the [Breaktag pipeline](https://github.com/roukoslab/breaktag), although any conforming BED file is accepted in breakinspectoR.
+
+## BTmotif
+
+Additionally, you may want to run the companion shiny app to derive Cas9 sequence determinants from BreakInspectoR output.
+
+It uses XGBoost and the provided sequence (usually, a protospacer) to predict which nucleotides and positions are important to predict any numerical outcome (eg. the blunt rate, Cas9 activity, etc.).
+
+### Dependencies
+
+The main dependency is [H2O](https://h2o.ai/), which can be installed from CRAN. The app has been tested with H2O version 3.36.1.2.
+
+Test the H2O installation with:
+
+```R
+library(h2o)
+localH2O = h2o.init()
+demo(h2o.kmeans)
+```
+
+You'll need a couple of packages to run the web app:
+
+```R
+install.packages("shiny")
+install.packages("shinydashboard")
+```
+
+To generate the motifs, you'll also need `ggplot2` and `ggseqlogo`:
+
+```R
+install.packages("ggplot2")
+devtools::install_github("omarwagih/ggseqlogo")
+```
+
+### Run
+
+Open the web app in your R console:
+
+```R
+breakinspectoR::shiny_BTmotif()
+```
+
+Paste a table of targets and click on `Go!`. Or check the `Example` data.
+The list can actually be a table with \<tab\> or \<comma\> separated fields.
+The columns are expected to be in this order: protospacer_sequence | blunt_rate.
