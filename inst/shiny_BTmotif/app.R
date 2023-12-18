@@ -16,27 +16,32 @@ shinyApp(
     dashboardBody(
       fluidRow(
         column(width=4,
-               box(width=NULL, title="Training data", status="warning",
-                   textAreaInput("targets", label="Paste here the BI blunt rate analysis", height="200px",
-                                 value=paste("# Columns are <tab> or <comma> separated.",
-                                             "# Columns are expected to be in this order: protospacer_sequence | blunt_rate",
-                                             "# Columns are not named.",
-                                             "# Lines starting with '#' are ignored", sep="\n")
-                   ),
-                   hr(),
-                   numericInput('ntrees', 'Number of trees', 1000, step=100),
-                   numericInput('nfolds', 'Number of folds for CV', 5),
-                   checkboxInput("scaleMotif", "Scale motif with importance", TRUE),
-                   hr(),
-                   fluidRow(column(6, actionLink("go", "Go!"), align="left"),
-                            column(6, actionLink("example", "example"), align="right")
-                   )
-               )
+          box(width=NULL, title="Training data", status="warning",
+            textAreaInput("targets", label="Paste here the BI blunt rate analysis", height="200px",
+                          value=paste("# Columns are <tab> or <comma> separated.",
+                                      "# Columns are expected to be in this order: protospacer_sequence | blunt_rate",
+                                      "# Columns are not named.",
+                                      "# Lines starting with '#' are ignored", sep="\n")
+            ),
+            hr(),
+            numericInput('ntrees', 'Number of trees', 1000, step=100),
+            numericInput('nfolds', 'Number of folds for CV', 5),
+            checkboxInput("scaleMotif", "Scale motif with importance", TRUE),
+            hr(),
+            fluidRow(
+              column(6, actionLink("go", "Go!"), align="left"),
+              column(6, actionLink("example", "example"), align="right")
+            )
+          )
         ),
         column(width=8,
-               box(width=NULL, title="Sequence determinants", status="warning",
-                   div(style='overflow-x: scroll', plotOutput("variableImportance")),
-                   div(style='overflow-x: scroll', plotOutput("motif")))
+          box(width=NULL, title="Sequence determinants", status="warning",
+            div(style='overflow-x: scroll', plotOutput("variableImportance")),
+            div(style='overflow-x: scroll', plotOutput("motif"))
+          ),
+          box(width=NULL, title="Model Performance", status="warning",
+            div(style='overflow-x: scroll', plotOutput("OEplot"))
+          )
         )
       )
     )
@@ -97,7 +102,7 @@ shinyApp(
         }, error=function(e) NULL)
       })
 
-      withProgress(message="Training model, this may take a while...", value=0, {
+      withProgress(message="Training model, this may take a while. Check the R console for progress...", value=0, {
         tryCatch({
           df <- as.data.frame(t(as.data.frame(onehot)))
           colnames(df) <- paste("p", paste(rep(1:nchar(targets()[[1]][1]), each=4), NT, sep="_"), sep="_")
@@ -174,6 +179,25 @@ shinyApp(
              y="scaled regression coefficient",
              x="protospacer position") +
         ggseqlogo::theme_logo()
+    })
+
+    output$OEplot <- renderPlot({
+      req(model(), cancelOutput=TRUE)
+      
+      cvpreds <- h2o.getFrame(model()@model[["cross_validation_holdout_predictions_frame_id"]][["name"]])
+      x <- data.frame(expected=as.data.frame(cvpreds)$predict,
+                      observed=targets()[[2]])
+
+      opar <- par(mfrow=c(1, 2))
+      smoothScatter(x$expected ~ x$observed, nbin=512, nrpoints=0,
+                    main=paste0("Prediction performance (on cross-valitaded data)\nR=", round(cor(x$observed, x$expected), 2)),
+                    xlab="observed blunt rate", ylab="predicted blunt rate",
+                    colramp=colorRampPalette(c("black", "blue", "cyan", "yellow", "red")))
+      abline(0, 1, col="blue", lty=1, lwd=2)
+      abline(lm(x$expected ~ x$observed), col="blue", lty=2, lwd=2)
+
+      hist(x$observed - x$expected, breaks=100, main="Distribution of residuals")
+      par(opar)
     })
   }
 )
