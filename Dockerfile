@@ -19,7 +19,6 @@ RUN apt-get update && \
 RUN R --slave -e 'install.packages(c("RCurl","jsonlite", "devtools", "shiny", "shinydashboard", "ggplot2"))' && \
     R --slave -e 'install.packages("h2o", type="source", repos="http://h2o-release.s3.amazonaws.com/h2o/rel-zumbo/2/R")' && \
     R --slave -e 'devtools::install_github("omarwagih/ggseqlogo")' && \
-    R --slave -e 'devtools::install_github("roukoslab/bluntPred")' && \
     R --slave -e 'devtools::install_github("roukoslab/breakinspectoR")' && \
     R --slave -e 'file.copy(system.file("shiny_BTmotif", package="breakinspectoR"), "/srv/shiny-server/", recursive=TRUE)'
 
