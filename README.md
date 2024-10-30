@@ -117,6 +117,8 @@ Additionally, you may want to run the companion shiny app to derive Cas9 sequenc
 
 It uses XGBoost and the provided sequence (usually, a protospacer) to predict which nucleotides and positions are important to predict any numerical outcome (eg. the blunt rate, Cas9 activity, etc.).
 
+![BTmotif](assets/BTmotif.png)
+
 ### Dependencies
 
 The main dependency is [H2O](https://h2o.ai/), which can be installed from CRAN. The app has been tested with H2O version 3.36.1.2.
@@ -163,6 +165,8 @@ The columns are expected to be in this order: protospacer_sequence | blunt_rate.
 ## bluntPred
 
 For your set of gRNAs, you may want to run the prediction of blunt rates of Streptococcus pyogenes Cas9 (SpCas9) using the XGBoost model trained with HiPlex1 data.
+
+![bluntPred](assets/bluntPred.png)
 
 ### Dependencies
 
