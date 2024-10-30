@@ -11,7 +11,7 @@ shinyApp(
   # Define UI -------
   #
   ui=dashboardPage(
-    dashboardHeader(title="Blunt rate prediction (Chakrabarti's)", titleWidth=300),
+    dashboardHeader(title="Extract sequence determinants: BTmotif", titleWidth=300),
     dashboardSidebar(disable=TRUE),
     dashboardBody(
       fluidRow(
