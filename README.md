@@ -96,7 +96,7 @@ manhattan_plot(offtargets, bsgenome=bsgenome)
 Input BED files describing coordinates and number of DSB are expected for the "target" and "non-target" libraries.
 It's possible to run breakinspectoR without the non-target library, nevertheless it is advised to include such experiment to calculate a p-value and control the false discovery rate.
 
-```
+```sh
 chr6  148074  148075  .  2  +
 chr6  148093  148094  .  1  -
 chr6  148240  148241  .  1  -
