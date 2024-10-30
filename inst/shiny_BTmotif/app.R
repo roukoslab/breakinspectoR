@@ -11,7 +11,7 @@ shinyApp(
   # Define UI -------
   #
   ui=dashboardPage(
-    dashboardHeader(title="Extract sequence determinants: BTmotif", titleWidth=500),
+    dashboardHeader(title="BTmotif: Extract sequence determinants", titleWidth=500),
     dashboardSidebar(disable=TRUE),
     dashboardBody(
       fluidRow(
