@@ -41,7 +41,7 @@ shinyApp(
           ),
           box(width=NULL, title="Model Performance", status="warning",
             div(style='overflow-x: scroll', plotOutput("OEplot"))
-          )
+          )#{{Impressum-placeholder}}
         )
       )
     )
