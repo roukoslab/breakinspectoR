@@ -566,3 +566,164 @@ plot_scission_profile <- function(x, type=c("frequency", "absolute")) {
 
   p
 }
+
+#' plot_pam_logo
+#' PAM prefence Analysis.
+#'
+#' @param x A GRanges object containing the results of a breakinspectoR
+#' analysis. Possibly filtered (eg. qval < .01).
+#'
+#' @return A ggplot object.
+#'
+#' @import ggplot2
+#' @importFrom ggseqlogo ggseqlogo
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   offtargets <- breakinspectoR(
+#'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+#'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
+#'     guide    ="GACCCCCTCCACCCCGCCTC",
+#'     PAM      =c("NGG", "NAG"),
+#'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
+#'     cutsiteFromPAM=3
+#'   )
+#'
+#'   plot_pam_logo(offtargets)
+#' }
+plot_pam_logo <- function(x) {
+
+  # check if ggseqlogo is installed
+  if(!all(sapply(c("ggplot2", "ggseqlogo"), requireNamespace, quietly=TRUE))) {
+    stop("Package(s) ggplot2 and ggseqlogo and/or their dependencies not available. ",
+         "Consider installing them before using this function.", call.=FALSE)
+  }
+
+  ggseqlogo::ggseqlogo(as.character(x$pam)) + labs(x="Position in PAM (5'-3')")
+}
+
+#' plot_relative_activity
+#' Plot Cas9 activity of a list of multiple gRNA offtargets relative to one experiment.
+#'
+#' @param x A named list of GRanges object containing the results of a breakinspectoR
+#' analysis. Possibly filtered (eg. qval < .01).
+#' @param ref Which experiment from `x` should be taken as reference? either a
+#' number or a name. Defaults to the first experiment in `x`.
+#' @param what Whether to use only signal from on-targets (0 mismatches), off-targets (>0 mm)
+#' or all. One of c("on-targets", "off-targets", "all).
+#'
+#' @return A ggplot object.
+#'
+#' @import ggplot2
+#' @importFrom reshape2 melt
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   offtargets <- breakinspectoR(
+#'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+#'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
+#'     guide    ="GACCCCCTCCACCCCGCCTC",
+#'     PAM      =c("NGG", "NAG"),
+#'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
+#'     cutsiteFromPAM=3
+#'   )
+#'
+#'   # simulate 2 different experiments by picking 25 random offtargets
+#'   plot_rel_activity(list(a=sample(offtargets, 25), b=sample(offtargets, 25)), what="all")
+#' }
+plot_rel_activity <- function(x, ref=1, what=c("on-targets", "off-targets", "all")) {
+
+  # check if the user provided a list of GRanges objects
+  if(!is(x, "list")) {
+    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analsysis", call.=FALSE)
+  }
+  if(!all(sapply(x, is, class2="GRanges"))) {
+    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analsysis", call.=FALSE)
+  }
+
+  # filter targets list
+  what <- match.arg(what)
+  if(what == "on-targets") {
+    x <- x[mismatches == 0]
+  }
+  if(what == "off-targets") {
+    x <- x[mismatches > 0]
+  }
+
+  # calculate activity and make it relative to the reference experiment
+  activity <- lapply(x, function(x) sum(x$target.breaks)) |> reshape2::melt()
+  s <- if(is.null(ref)) 1 else sum(x[[ref]]$target.breaks)
+  activity$relative_activity <- activity$value / s
+
+  # and plot
+  p <- ggplot(activity, aes(x=L1, y=relative_activity)) +
+    geom_bar(stat="identity") +
+    labs(x="Experiment", y="Relative Activity (%)") +
+    theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+
+  if(!is.null(ref)) {
+    p <- p + scale_y_continuous(labels=scales::percent_format())
+  }
+
+  p
+}
+
+#' plot_specificity
+#' Plot Cas9 specificity of a list of multiple gRNA offtargets.
+#'
+#' @param x A named list of GRanges object containing the results of a breakinspectoR
+#' analysis. Possibly filtered (eg. qval < .01).
+#' @param ref Which experiment from `x` should be taken as reference? either a
+#' number or a name. Defaults to the first experiment in `x`. Can be NULL, for no ref.
+#'
+#' @return A ggplot object.
+#'
+#' @import ggplot2
+#' @importFrom reshape2 melt
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   offtargets <- breakinspectoR(
+#'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+#'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
+#'     guide    ="GACCCCCTCCACCCCGCCTC",
+#'     PAM      =c("NGG", "NAG"),
+#'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
+#'     cutsiteFromPAM=3
+#'   )
+#'
+#'   # simulate 2 different experiments by picking 25 random offtargets
+#'   exp1 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+#'   exp2 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+#'   plot_specificity(list(a=exp1, b=exp2))
+#' }
+plot_specificity <- function(x, ref=1) {
+
+  # check if the user provided a list of GRanges objects
+  if(!is(x, "list")) {
+    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analsysis", call.=FALSE)
+  }
+  if(!all(sapply(x, is, class2="GRanges"))) {
+    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analsysis", call.=FALSE)
+  }
+
+  # calculate activity and make it relative to the reference experiment
+  spec <- lapply(x, function(x) sum(x$target.breaks[x$mismatches == 0]) / sum(x$target.breaks)) |> reshape2::melt()
+  s <- if(is.null(ref)) 1 else sum(x[[ref]]$target.breaks[x[[ref]]$mismatches == 0]) / sum(x[[ref]]$target.breaks)
+  spec$relative_activity <- spec$value / s
+
+  # and plot
+  p <- ggplot(spec, aes(x=L1, y=relative_activity)) +
+    geom_bar(stat="identity") +
+    labs(x="Experiment", y="Specificity score") +
+    theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+
+  if(!is.null(ref)) {
+    p <- p + scale_y_continuous(labels=scales::percent_format())
+  }
+
+  p
+}
