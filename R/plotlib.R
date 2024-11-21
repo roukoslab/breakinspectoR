@@ -34,9 +34,10 @@
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   plot_guide_fidelity(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' plot_guide_fidelity(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 plot_guide_fidelity <- function(x, guide, pam) {
   guide_pam <- unlist(strsplit(paste0(guide, pam), ""))
   offtarget_seqs <- cbind(as.data.frame(do.call(rbind, strsplit(x$guide, ""))),
@@ -101,9 +102,10 @@ plot_guide_fidelity <- function(x, guide, pam) {
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   plot_sequence_composition(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' plot_sequence_composition(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 plot_sequence_composition <- function(x, guide, pam) {
 
   guide_pam <- unlist(strsplit(paste0(guide, pam), ""))
@@ -166,9 +168,10 @@ plot_sequence_composition <- function(x, guide, pam) {
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   plot_offtargets_by_pam(offtargets, fraction=TRUE)
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' plot_offtargets_by_pam(offtargets, fraction=TRUE)
 plot_offtargets_by_pam <- function(x, fraction=TRUE) {
 
   x <- reshape2::melt(table(x$pam))
@@ -216,9 +219,10 @@ plot_offtargets_by_pam <- function(x, fraction=TRUE) {
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   plot_mismatch_freq(offtargets)
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' plot_mismatch_freq(offtargets)
 plot_mismatch_freq <- function(x, bins=1+diff(range(x$mismatches))) {
   x <- as.data.frame(x)
 
@@ -257,9 +261,10 @@ plot_mismatch_freq <- function(x, bins=1+diff(range(x$mismatches))) {
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   plot_position_cutsite(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' plot_position_cutsite(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 plot_position_cutsite <- function(x, guide, pam) {
 
   guide_pam <- unlist(strsplit(paste0(guide, pam), ""))
@@ -316,13 +321,14 @@ plot_position_cutsite <- function(x, guide, pam) {
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   plot_genomic_position(
-#'     offtargets,
-#'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
-#'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38"
-#'   )
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' plot_genomic_position(
+#'   offtargets,
+#'   target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+#'   bsgenome ="BSgenome.Hsapiens.UCSC.hg38"
+#' )
 plot_genomic_position <- function(x, target, bsgenome,
                                   standard_chromosomes=TRUE,
                                   min_breaks=2, log_signal=FALSE, 
@@ -415,12 +421,13 @@ plot_genomic_position <- function(x, target, bsgenome,
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   manhattan_plot(
-#'     offtargets,
-#'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38"
-#'   )
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' manhattan_plot(
+#'   offtargets,
+#'   bsgenome ="BSgenome.Hsapiens.UCSC.hg38"
+#' )
 manhattan_plot <- function(x,
                            bsgenome,
                            standard_chromosomes=TRUE,
@@ -536,9 +543,10 @@ manhattan_plot <- function(x,
 #'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
 #'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38")
-#'
-#'   plot_scission_profile(offtargets.scission_profile)
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' plot_scission_profile(offtargets.scission_profile)
 plot_scission_profile <- function(x, type=c("frequency", "absolute")) {
   type <- match.arg(type)
 
@@ -588,9 +596,10 @@ plot_scission_profile <- function(x, type=c("frequency", "absolute")) {
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   plot_pam_logo(offtargets)
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' plot_pam_logo(offtargets)
 plot_pam_logo <- function(x) {
 
   # check if ggseqlogo is installed
@@ -628,12 +637,13 @@ plot_pam_logo <- function(x) {
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   # simulate 2 different experiments by picking 25 random offtargets
-#'   exp1 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
-#'   exp2 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
-#'   plot_relative_activity(list(a=exp1, b=exp2), what="all")
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' # simulate 2 different experiments by picking 25 random offtargets
+#' exp1 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+#' exp2 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+#' plot_relative_activity(list(a=exp1, b=exp2), what="all")
 plot_relative_activity <- function(x, ref=1, what=c("on-targets", "off-targets", "all")) {
 
   # check if the user provided a list of GRanges objects
@@ -695,12 +705,13 @@ plot_relative_activity <- function(x, ref=1, what=c("on-targets", "off-targets",
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   # simulate 2 different experiments by picking 25 random offtargets
-#'   exp1 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
-#'   exp2 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
-#'   plot_specificity(list(a=exp1, b=exp2))
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' # simulate 2 different experiments by picking 25 random offtargets
+#' exp1 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+#' exp2 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+#' plot_specificity(list(a=exp1, b=exp2))
 plot_specificity <- function(x, ref=1) {
 
   # check if the user provided a list of GRanges objects
@@ -758,12 +769,13 @@ plot_specificity <- function(x, ref=1) {
 #'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
 #'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38")
-#'
-#'   # simulate 2 different experiments by picking 25 random offtargets
-#'   exp1 <- sample(offtargets.scission_profile, 25)
-#'   exp2 <- sample(offtargets.scission_profile, 25)
-#'   plot_blunt_rate_density(list(a=exp1, b=exp2))
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' # simulate 2 different experiments by picking 25 random offtargets
+#' exp1 <- sample(offtargets.scission_profile, 25)
+#' exp2 <- sample(offtargets.scission_profile, 25)
+#' plot_blunt_rate_density(list(a=exp1, b=exp2))
 plot_blunt_rate_density <- function(x) {
 
   # check if ggridges is installed
@@ -819,12 +831,13 @@ plot_blunt_rate_density <- function(x) {
 #'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
 #'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38")
-#'
-#'   # simulate 2 different experiments by picking 25 random offtargets
-#'   exp1 <- sample(offtargets.scission_profile, 25)
-#'   exp2 <- sample(offtargets.scission_profile, 25)
-#'   plot_overhang_size(list(a=exp1, b=exp2))
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' # simulate 2 different experiments by picking 25 random offtargets
+#' exp1 <- sample(offtargets.scission_profile, 25)
+#' exp2 <- sample(offtargets.scission_profile, 25)
+#' plot_overhang_size(list(a=exp1, b=exp2))
 plot_overhang_size <- function(x) {
 
   # sum signal per position around cutsite and prepare data for the plot
@@ -868,9 +881,10 @@ plot_overhang_size <- function(x) {
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     cutsiteFromPAM=3
 #'   )
-#'
-#'   plot_pam_composition(offtargets)
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' plot_pam_composition(offtargets)
 plot_pam_composition <- function(x) {
 
   nt <- c("A", "C", "G", "T")

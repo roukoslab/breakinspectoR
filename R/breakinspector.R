@@ -441,9 +441,7 @@ read_targets <- function(x, genome, standard_chromosomes, strandless) {
 #' @export
 #'
 #' @examples
-#' ## this is needed only for the package to install
-#' if (requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly=TRUE)) {
-#' ##
+#' \dontrun{
 #'   offtargets <- breakinspectoR(
 #'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
 #'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
@@ -452,9 +450,10 @@ read_targets <- function(x, genome, standard_chromosomes, strandless) {
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     eFDR     =FALSE,
 #'     cutsiteFromPAM=3)
-#'
-#'   offtargets_filtered <- reduceOT(offtargets)
 #' }
+#' data(breakinspectoR_examples)
+#'
+#' offtargets_filtered <- reduceOT(offtargets)
 #'
 reduceOT <- function(x, fdr=.01, qval=.01, mismatches=7, standard_chromosomes=TRUE,
                    cores=getOption("mc.cores", 2L),
@@ -560,9 +559,7 @@ reduceOT <- function(x, fdr=.01, qval=.01, mismatches=7, standard_chromosomes=TR
 #' @export
 #'
 #' @examples
-#' ## this is needed only for the package to install
-#' if (requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly=TRUE)) {
-#' ##
+#' \dontrun{
 #'   offtargets <- breakinspectoR(
 #'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
 #'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
@@ -571,7 +568,11 @@ reduceOT <- function(x, fdr=.01, qval=.01, mismatches=7, standard_chromosomes=TR
 #'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
 #'     eFDR     =FALSE,
 #'     cutsiteFromPAM=3)
+#' }
 #'
+#' ## this is needed only for the package to install
+#' if (requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly=TRUE)) {
+#' ##
 #'   offtargets.scission_profile <- scission_profile_analysis(
 #'     x        =offtargets,
 #'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
@@ -580,7 +581,6 @@ reduceOT <- function(x, fdr=.01, qval=.01, mismatches=7, standard_chromosomes=TR
 #'
 #'   mcols(offtargets) <- cbind(mcols(offtargets), mcols(offtargets.scission_profile))
 #' }
-#'
 scission_profile_analysis <- function(x,
                                       target,
                                       nontarget=GRanges(),

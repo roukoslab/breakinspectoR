@@ -34,7 +34,8 @@ Sequence composition of off-target sites.
     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
     cutsiteFromPAM=3
   )
-
-  plot_sequence_composition(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 }
+data(breakinspectoR_examples)
+
+plot_sequence_composition(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 }

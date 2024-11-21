@@ -53,10 +53,11 @@ position with bar height representing read count (number of breaks).
     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
     cutsiteFromPAM=3
   )
-
-  manhattan_plot(
-    offtargets,
-    bsgenome ="BSgenome.Hsapiens.UCSC.hg38"
-  )
 }
+data(breakinspectoR_examples)
+
+manhattan_plot(
+  offtargets,
+  bsgenome ="BSgenome.Hsapiens.UCSC.hg38"
+)
 }

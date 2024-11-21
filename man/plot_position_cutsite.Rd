@@ -32,7 +32,8 @@ Plot the frequency of the position of the cutsite relative to the guide.
     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
     cutsiteFromPAM=3
   )
-
-  plot_position_cutsite(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 }
+data(breakinspectoR_examples)
+
+plot_position_cutsite(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 }

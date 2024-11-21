@@ -32,7 +32,8 @@ Suggests: BiocStyle,
           BSgenome.Hsapiens.UCSC.hg19,
           BSgenome.Mmusculus.UCSC.mm10,
           BSgenome.Mmusculus.UCSC.mm9
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 NeedsCompilation: no
 VignetteBuilder: knitr
 biocViews: Software, Technology, Sequencing, CRISPR, Coverage, PeakDetection
+URL: https://roukoslab.github.io/breakinspectoR/

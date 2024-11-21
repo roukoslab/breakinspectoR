@@ -31,7 +31,8 @@ Plot the count of offtargets by the different PAMs
     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
     cutsiteFromPAM=3
   )
-
-  plot_offtargets_by_pam(offtargets, fraction=TRUE)
 }
+data(breakinspectoR_examples)
+
+plot_offtargets_by_pam(offtargets, fraction=TRUE)
 }

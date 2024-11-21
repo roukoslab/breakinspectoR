@@ -53,11 +53,12 @@ on-/off-targets.
     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
     cutsiteFromPAM=3
   )
-
-  plot_genomic_position(
-    offtargets,
-    target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
-    bsgenome ="BSgenome.Hsapiens.UCSC.hg38"
-  )
 }
+data(breakinspectoR_examples)
+
+plot_genomic_position(
+  offtargets,
+  target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+  bsgenome ="BSgenome.Hsapiens.UCSC.hg38"
+)
 }

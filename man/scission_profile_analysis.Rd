@@ -60,9 +60,7 @@ function is performed to test for a significant enrichment of breaks around
 the cutsite in the target compared to the non-target libraries.
 }
 \examples{
-## this is needed only for the package to install
-if (requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly=TRUE)) {
-##
+\dontrun{
   offtargets <- breakinspectoR(
     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
@@ -71,7 +69,11 @@ if (requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly=TRUE)) {
     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
     eFDR     =FALSE,
     cutsiteFromPAM=3)
+}
 
+## this is needed only for the package to install
+if (requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly=TRUE)) {
+##
   offtargets.scission_profile <- scission_profile_analysis(
     x        =offtargets,
     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
@@ -80,5 +82,4 @@ if (requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly=TRUE)) {
 
   mcols(offtargets) <- cbind(mcols(offtargets), mcols(offtargets.scission_profile))
 }
-
 }

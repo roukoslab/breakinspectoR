@@ -79,16 +79,47 @@ plotting functions:
 
 ```R
 plot_position_cutsite(offtargets, guide=guide, pam=PAM["canonical"])
-
 plot_mismatch_freq(offtargets)
-
 plot_offtargets_by_pam(offtargets)
-
 plot_sequence_composition(offtargets, guide=guide, pam=PAM["canonical"])
-
 plot_guide_fidelity(offtargets, guide=guide, pam=PAM["canonical"])
-
+plot_genomic_position(offtargets, bsgenome=bsgenome,
+                      target=system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"))
+plot_pam_logo(offtargets)
+plot_pam_composition(offtargets)
 manhattan_plot(offtargets, bsgenome=bsgenome)
+
+# simulate 2 different experiments by picking 25 random offtargets
+exp1 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+exp2 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+plot_relative_activity(list(a=exp1, b=exp2), what="all")
+plot_specificity(list(a=exp1, b=exp2))
+plot_blunt_rate_density(list(a=exp1, b=exp2))
+```
+
+### Scission profile analysis
+
+One unique feature of BreakTag is that it provides the structure of a DSB at single base resolution.
+BreakinspectoR implements a method and several visualizations to analyze DSB end structure as determined by BreakTag.
+
+```R
+offtargets.scission_profile <- scission_profile_analysis(
+  x        =offtargets,
+  target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+  nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
+  bsgenome ="BSgenome.Hsapiens.UCSC.hg38")
+```
+
+Along with several useful visualizations:
+
+```R
+# simulate 2 different experiments by picking 25 random offtargets
+exp1 <- sample(offtargets.scission_profile, 25)
+exp2 <- sample(offtargets.scission_profile, 25)
+
+plot_blunt_rate_density(list(a=exp1, b=exp2))
+plot_overhang_size(list(a=exp1, b=exp2))
+plot_scission_profile(offtargets.scission_profile)
 ```
 
 ## Input files

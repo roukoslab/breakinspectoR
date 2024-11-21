@@ -38,7 +38,8 @@ See ?`Biostrings::lowlevel-matching` for more information.
     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
     cutsiteFromPAM=3
   )
-
-  plot_guide_fidelity(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 }
+data(breakinspectoR_examples)
+
+plot_guide_fidelity(offtargets, guide="GACCCCCTCCACCCCGCCTC", pam="NGG")
 }

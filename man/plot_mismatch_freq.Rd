@@ -31,7 +31,8 @@ Plot the frequency of mismatches per offtarget.
     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
     cutsiteFromPAM=3
   )
-
-  plot_mismatch_freq(offtargets)
 }
+data(breakinspectoR_examples)
+
+plot_mismatch_freq(offtargets)
 }

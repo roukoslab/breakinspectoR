@@ -37,7 +37,8 @@ Plot ratios of blunt vs. staggered signal for each OT detected.
     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
     bsgenome ="BSgenome.Hsapiens.UCSC.hg38")
-
-  plot_scission_profile(offtargets.scission_profile)
 }
+data(breakinspectoR_examples)
+
+plot_scission_profile(offtargets.scission_profile)
 }

@@ -39,9 +39,7 @@ a GRanges object with the filtered OT.
 Does a very opinionated filtering of the OT detected by breakinspector.
 }
 \examples{
-## this is needed only for the package to install
-if (requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly=TRUE)) {
-##
+\dontrun{
   offtargets <- breakinspectoR(
     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
@@ -50,8 +48,9 @@ if (requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly=TRUE)) {
     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
     eFDR     =FALSE,
     cutsiteFromPAM=3)
-
-  offtargets_filtered <- reduceOT(offtargets)
 }
+data(breakinspectoR_examples)
+
+offtargets_filtered <- reduceOT(offtargets)
 
 }
