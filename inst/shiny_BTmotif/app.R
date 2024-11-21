@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyjs)
 library(shinydashboard)
 library(h2o)
 library(ggplot2)
@@ -15,6 +16,7 @@ shinyApp(
     dashboardSidebar(disable=TRUE),
     dashboardBody(
       fluidRow(
+        shinyjs::useShinyjs(),
         column(width=4,
           box(width=NULL, title="Training data", status="warning",
             textAreaInput("targets", label="Paste here the BI blunt rate analysis", height="200px",
@@ -23,14 +25,15 @@ shinyApp(
                                       "# Columns are not named.",
                                       "# Lines starting with '#' are ignored", sep="\n")
             ),
+            fluidRow(column(12, actionLink("example", "example"), align="right")),
             hr(),
             numericInput('ntrees', 'Number of trees', 1000, step=100),
             numericInput('nfolds', 'Number of folds for CV', 5),
             checkboxInput("scaleMotif", "Scale motif with importance", TRUE),
             hr(),
             fluidRow(
-              column(6, actionLink("go", "Go!"), align="left"),
-              column(6, actionLink("example", "example"), align="right")
+              column(6, actionButton("go", "Go!", icon=icon("play")), align="left"),
+              column(6, shinyjs::disabled(downloadButton("download_model", "Download model")), align="right")
             )
           )
         ),
@@ -134,6 +137,12 @@ shinyApp(
       updateTextInput(session, "targets", value=x)
     })
 
+    observe({
+      req(model(), cancelOutput=TRUE)
+      #updateActionButton(session, "download_model", disabled=FALSE)
+      shinyjs::enable("download_model")
+    })
+
     #
     # UI ------
     #
@@ -198,6 +207,11 @@ shinyApp(
 
       hist(x$observed - x$expected, breaks=100, main="Distribution of residuals")
       par(opar)
+    })
+
+    output$download_model <- downloadHandler("model.h2o", content=function(file) {
+      req(model(), cancelOutput=TRUE)
+      h2o.saveModel(model(), force=TRUE, export_cross_validation_predictions=TRUE, filename=file)
     })
   }
 )
