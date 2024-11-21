@@ -508,7 +508,6 @@ manhattan_plot <- function(x,
 #' plot_scission_profile
 #' Plot ratios of blunt vs. staggered signal for each OT detected.
 #' 
-#'
 #' @param x A GRanges object containing the results of a scission profile
 #' analysis.
 #' @param type show the ratio as absolute signal or percentage. One of
@@ -631,16 +630,18 @@ plot_pam_logo <- function(x) {
 #'   )
 #'
 #'   # simulate 2 different experiments by picking 25 random offtargets
-#'   plot_rel_activity(list(a=sample(offtargets, 25), b=sample(offtargets, 25)), what="all")
+#'   exp1 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+#'   exp2 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+#'   plot_relative_activity(list(a=exp1, b=exp2), what="all")
 #' }
-plot_rel_activity <- function(x, ref=1, what=c("on-targets", "off-targets", "all")) {
+plot_relative_activity <- function(x, ref=1, what=c("on-targets", "off-targets", "all")) {
 
   # check if the user provided a list of GRanges objects
   if(!is(x, "list")) {
-    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analsysis", call.=FALSE)
+    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analysis", call.=FALSE)
   }
   if(!all(sapply(x, is, class2="GRanges"))) {
-    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analsysis", call.=FALSE)
+    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analysis", call.=FALSE)
   }
 
   # filter targets list
@@ -704,10 +705,10 @@ plot_specificity <- function(x, ref=1) {
 
   # check if the user provided a list of GRanges objects
   if(!is(x, "list")) {
-    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analsysis", call.=FALSE)
+    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analysis", call.=FALSE)
   }
   if(!all(sapply(x, is, class2="GRanges"))) {
-    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analsysis", call.=FALSE)
+    stop("Please provide a *list* of GRanges objects containing the results of a breakinspectoR analysis", call.=FALSE)
   }
 
   # calculate activity and make it relative to the reference experiment
@@ -726,4 +727,173 @@ plot_specificity <- function(x, ref=1) {
   }
 
   p
+}
+
+#' plot_blunt_rate_density
+#' Density Plot for Blunt Rate Distribution.
+#'
+#' @param x A named list of GRanges object containing the results of a
+#' scission_profile_analysis.
+#'
+#' @return A ggplot object.
+#'
+#' @import ggplot2
+#' @importFrom reshape2 melt
+#' @importFrom ggridges stat_density_ridges geom_density_ridges_gradient
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   offtargets <- breakinspectoR(
+#'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+#'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
+#'     guide    ="GACCCCCTCCACCCCGCCTC",
+#'     PAM      =c("NGG", "NAG"),
+#'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
+#'     cutsiteFromPAM=3
+#'   )
+#'
+#'   offtargets.scission_profile <- scission_profile_analysis(
+#'     x        =offtargets,
+#'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+#'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
+#'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38")
+#'
+#'   # simulate 2 different experiments by picking 25 random offtargets
+#'   exp1 <- sample(offtargets.scission_profile, 25)
+#'   exp2 <- sample(offtargets.scission_profile, 25)
+#'   plot_blunt_rate_density(list(a=exp1, b=exp2))
+#' }
+plot_blunt_rate_density <- function(x) {
+
+  # check if ggridges is installed
+  if(!all(sapply(c("ggplot2", "ggridges"), requireNamespace, quietly=TRUE))) {
+    stop("Package(s) ggplot2 and ggridges and/or their dependencies not available. ",
+         "Consider installing them before using this function.", call.=FALSE)
+  }
+
+  # check if the user provided a list of GRanges objects
+  if(!is(x, "list")) {
+    stop("Please provide a *list* of GRanges objects containing the results of a scission_profile_analysis()", call.=FALSE)
+  }
+  if(!all(sapply(x, is, class2="GRanges"))) {
+    stop("Please provide a *list* of GRanges objects containing the results of a scission_profile_analysis()", call.=FALSE)
+  }
+
+  # calculate the blunt rate as the ratio between blunt vs. staggered reads and do the plot
+  x <- lapply(x, function(x) log2(1 + x$on.target) - log2(1 + x$around.target)) |> reshape2::melt()
+
+  ggplot(x, aes(x=value, y=L1, fill=factor(after_stat(quantile), labels=c("0-25%", "25-50%", "50-75%", "75-100%")))) +
+    ggridges::stat_density_ridges(geom="density_ridges_gradient", calc_ecdf=TRUE, quantiles=4, quantile_lines=TRUE) +
+    labs(x="Blunt Rate", y="Experiment") +
+    scale_fill_manual("Quartiles", values=colorRampPalette(c("white", "#012345"))(4)) +
+    labs(title="Blunt Rate Density Distribution") +
+    geom_vline(xintercept=0, lty=2, color="red")
+}
+
+#' plot_overhang_size
+#' Plots the proportion of blunt and staggered reads by size.
+#'
+#' @param x A named list of GRanges object containing the results of a
+#' scission_profile_analysis.
+#'
+#' @return A ggplot object.
+#'
+#' @import ggplot2
+#' @importFrom reshape2 melt
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   offtargets <- breakinspectoR(
+#'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+#'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
+#'     guide    ="GACCCCCTCCACCCCGCCTC",
+#'     PAM      =c("NGG", "NAG"),
+#'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
+#'     cutsiteFromPAM=3
+#'   )
+#'
+#'   offtargets.scission_profile <- scission_profile_analysis(
+#'     x        =offtargets,
+#'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+#'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
+#'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38")
+#'
+#'   # simulate 2 different experiments by picking 25 random offtargets
+#'   exp1 <- sample(offtargets.scission_profile, 25)
+#'   exp2 <- sample(offtargets.scission_profile, 25)
+#'   plot_overhang_size(list(a=exp1, b=exp2))
+#' }
+plot_overhang_size <- function(x) {
+
+  # sum signal per position around cutsite and prepare data for the plot
+  x <- lapply(x, function(x) {
+    x <- colSums(x$target_counts_per_position, na.rm=TRUE) |> reshape2::melt()
+    x$value <- x$value / sum(x$value)
+    x$L2 <- factor(rownames(x), levels=c("cutsite-3", "cutsite-2", "cutsite-1", "cutsite", "cutsite+1", "cutsite+2", "cutsite+3"),
+                                labels=c("-3nt", "-2nt", "-1nt", "Blunt", "+1nt", "+2nt", "+3nt"))
+    x
+  }) |> reshape2::melt()
+
+  # plot
+  ggplot(x, aes(x=L2, y=L1, fill=value)) +
+    geom_tile(color="white") +
+    scale_fill_gradient("Proportion of reads", low="white", high="#012345", labels=scales::percent_format()) +
+    labs(title="Scission profiles frequency", x="", y="") +
+    theme_minimal() +
+    theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
+          legend.position="bottom")
+}
+
+#' plot_pam_composition
+#' Plots the proportion nucleotide usage per position of the PAM.
+#'
+#' @param x A GRanges object containing the results of a breakinspectoR
+#' analysis.
+#'
+#' @return A ggplot object.
+#'
+#' @import ggplot2
+#' @importFrom reshape2 melt
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   offtargets <- breakinspectoR(
+#'     target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+#'     nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
+#'     guide    ="GACCCCCTCCACCCCGCCTC",
+#'     PAM      =c("NGG", "NAG"),
+#'     bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
+#'     cutsiteFromPAM=3
+#'   )
+#'
+#'   plot_pam_composition(offtargets)
+#' }
+plot_pam_composition <- function(x) {
+
+  nt <- c("A", "C", "G", "T")
+  twomer <- paste0(nt, rep(nt, each=4))
+
+  # create contingency table
+  x <- table(substr(x$pam, 1, 1), substr(x$pam, 2, 3)) |> reshape2::melt()
+  x$Var1 <- factor(as.character(x$Var1), levels=sort(nt))
+  x$Var2 <- factor(as.character(x$Var2), levels=sort(twomer))
+  x$value <- x$value / sum(x$value)
+
+  # fill missing PAM combinations
+  x <- merge(x, data.frame(Var1=nt, Var2=twomer), all=TRUE)
+  x$value[is.na(x$value)] <- 0
+
+  # and plot
+  ggplot(x, aes(x=Var2, y=Var1, fill=value)) +
+    geom_tile(color="white", show.legend=TRUE) +
+    scale_fill_gradient("Proportion of reads", low="white", high="#012345", labels=scales::percent_format()) +
+    scale_x_discrete(drop=FALSE) +
+    geom_vline(xintercept=c(4.5, 8.5, 12.5)) +
+    labs(title=paste("PAM Frequency"), x="2nd and 3rd Nucleotides", y="1st Nucleotide") +
+    theme_minimal() +
+    theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+          legend.position="bottom")
 }
