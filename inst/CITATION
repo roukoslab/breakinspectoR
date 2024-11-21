@@ -1,0 +1,8 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "Linking CRISPR-Cas9 Double-Strand Break Profiles to Gene Editing Precision with BreakTag",
+  author   = "Gabriel M. C. Longo, Sergi Sayols, Andriana G. Kotini, Sabine Heinen, Martin M. Mockel, Petra Beli, Vassilis Roukos",
+  journal  = "Nature Biotechnology",
+  year     = "2024",
+  doi      = "10.1038/s41587-024-02238-8"
+)
