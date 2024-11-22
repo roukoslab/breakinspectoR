@@ -16,12 +16,14 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /etc/services.d/rstudio /etc/init.d/rstudio-server /etc/cont-init.d
 
 # Install bluntPred package and all its dependencies
-RUN R --slave -e 'install.packages(c("RCurl","jsonlite", "devtools", "shiny", "shinydashboard", "ggplot2"))' && \
+RUN R --slave -e 'install.packages(c("RCurl","jsonlite", "devtools", "shiny", "shinydashboard", "shinyjs", "ggplot2", "cowplot"))' && \
     R --slave -e 'install.packages("h2o", type="source", repos="http://h2o-release.s3.amazonaws.com/h2o/rel-zumbo/2/R")' && \
     R --slave -e 'devtools::install_github("omarwagih/ggseqlogo")' && \
     R --slave -e 'devtools::install_github("roukoslab/breakinspectoR")' && \
     R --slave -e 'file.copy(system.file("shiny_BTmotif", package="breakinspectoR"), "/srv/shiny-server/", recursive=TRUE)' && \
-    sed -i 's|#{{Impressum-placeholder}}|, p(style="text-align: right;", a("the Institute of Molecular Biology (IMB) in Mainz", href="https://imb.de/", target="_blank")), p(style="text-align: right;", a("Impressum - Imprint", href="https://imb.de/impressum-imprint", target="_blank"))|' /srv/shiny-server/shiny_BTmotif/app.R
+    R --slave -e 'file.copy(system.file("shiny_bluntPred", package="breakinspectoR"), "/srv/shiny-server/", recursive=TRUE)' && \
+    sed -i 's|#{{Impressum-placeholder}}|, p(style="text-align: right;", a("the Institute of Molecular Biology (IMB) in Mainz", href="https://imb.de/", target="_blank")), p(style="text-align: right;", a("Impressum - Imprint", href="https://imb.de/impressum-imprint", target="_blank"))|' /srv/shiny-server/shiny_BTmotif/app.R && \
+    sed -i 's|#{{Impressum-placeholder}}|, p(style="text-align: right;", a("the Institute of Molecular Biology (IMB) in Mainz", href="https://imb.de/", target="_blank")), p(style="text-align: right;", a("Impressum - Imprint", href="https://imb.de/impressum-imprint", target="_blank"))|' /srv/shiny-server/shiny_bluntPred/app.R
 
 # Setup permissions
 RUN chown -R shiny:shiny /var/lib/shiny-server && \
