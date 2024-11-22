@@ -35,7 +35,7 @@ Plot Cas9 specificity of a list of multiple gRNA offtargets.
 data(breakinspectoR_examples)
 
 # simulate 2 different experiments by picking 25 random offtargets
-exp1 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
-exp2 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
-plot_specificity(list(a=exp1, b=exp2))
+spcas9 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+lz3    <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+plot_specificity(list(SpCas9=spcas9, LZ3=lz3))
 }

@@ -38,7 +38,7 @@ Plots the proportion of blunt and staggered reads by size.
 data(breakinspectoR_examples)
 
 # simulate 2 different experiments by picking 25 random offtargets
-exp1 <- sample(offtargets.scission_profile, 25)
-exp2 <- sample(offtargets.scission_profile, 25)
-plot_overhang_size(list(a=exp1, b=exp2))
+spcas9 <- sample(offtargets.scission_profile, 25)
+lz3    <- sample(offtargets.scission_profile, 25)
+plot_overhang_size(list(SpCas9=spcas9, LZ3=lz3))
 }

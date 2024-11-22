@@ -90,11 +90,10 @@ plot_pam_composition(offtargets)
 manhattan_plot(offtargets, bsgenome=bsgenome)
 
 # simulate 2 different experiments by picking 25 random offtargets
-exp1 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
-exp2 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
-plot_relative_activity(list(a=exp1, b=exp2), what="all")
-plot_specificity(list(a=exp1, b=exp2))
-plot_blunt_rate_density(list(a=exp1, b=exp2))
+spcas9 <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+lz3    <- c(offtargets[offtargets$mismatches == 0], sample(offtargets, 25))
+plot_relative_activity(list(SpCas9=spcas9, LZ3=lz3), what="all")
+plot_specificity(list(SpCas9=spcas9, LZ3=lz3))
 ```
 
 ### Scission profile analysis
@@ -114,11 +113,11 @@ Along with several useful visualizations:
 
 ```R
 # simulate 2 different experiments by picking 25 random offtargets
-exp1 <- sample(offtargets.scission_profile, 25)
-exp2 <- sample(offtargets.scission_profile, 25)
+spcas9 <- sample(offtargets.scission_profile, 25)
+lz3    <- sample(offtargets.scission_profile, 25)
 
-plot_blunt_rate_density(list(a=exp1, b=exp2))
-plot_overhang_size(list(a=exp1, b=exp2))
+plot_blunt_rate_density(list(SpCas9=spcas9, LZ3=lz3))
+plot_overhang_size(list(SpCas9=spcas9, LZ3=lz3))
 plot_scission_profile(offtargets.scission_profile)
 ```
 
