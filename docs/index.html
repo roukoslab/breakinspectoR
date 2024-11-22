@@ -197,7 +197,7 @@
 </h3>
 <p>The main dependency is <a href="https://h2o.ai/" class="external-link">H2O</a>, which can be installed from CRAN. The app has been tested with H2O version 3.36.1.2.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"h2o"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"h2o"</span>, type<span class="op">=</span><span class="st">"source"</span>, repos<span class="op">=</span><span class="st">"http://h2o-release.s3.amazonaws.com/h2o/rel-zumbo/2/R"</span><span class="op">)</span></span></code></pre></div>
 <p>Test the H2O installation with:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/h2oai/h2o-3" class="external-link">h2o</a></span><span class="op">)</span></span>
