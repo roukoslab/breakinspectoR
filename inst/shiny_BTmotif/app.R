@@ -39,11 +39,13 @@ shinyApp(
         ),
         column(width=8,
           box(width=NULL, title="Sequence determinants", status="warning",
-            div(style='overflow-x: scroll', plotOutput("variableImportance")),
-            div(style='overflow-x: scroll', plotOutput("motif"))
+              footer="Right click and 'Save Image as' to get a vectorized version for your publication",
+            div(style='overflow-x: scroll', imageOutput("variableImportance")),
+            div(style='overflow-x: scroll', imageOutput("motif"))
           ),
           box(width=NULL, title="Model Performance", status="warning",
-            div(style='overflow-x: scroll', plotOutput("OEplot"))
+              footer="Right click and 'Save Image as' to get a vectorized version for your publication",
+            div(style='overflow-x: scroll', imageOutput("OEplot"))
           )#{{Impressum-placeholder}}
         )
       )
@@ -65,6 +67,7 @@ shinyApp(
     onStop(function() h2o.shutdown(prompt=FALSE))
 
     # one-hot encode the sequences
+    # simpler version which doesn't take into account protospacer-sgRNA mismatches as in the NatBiotech paper
     onehot <- function(x) {    # onehot a sequence of nt
       onehot1 <- function(x) {
         m <- setNames(integer(4), NT)
@@ -146,14 +149,14 @@ shinyApp(
     #
     # UI ------
     #
-    output$variableImportance <- renderPlot({
+    variableImportanceSVG <- reactive({
       req(model(), cancelOutput=TRUE)
 
       varimp <- as.data.frame(h2o.varimp(model()))
       varimp$pos  <- as.numeric(sub("^p_(\\d+)_([ACTG])", "\\1", as.character(varimp$variable)))
       varimp$to   <- sub("^p_(\\d+)_([ACTG])", "\\2", as.character(varimp$variable))
 
-      ggplot(varimp, aes(x=pos, y=relative_importance, color=to)) +
+      p <- ggplot(varimp, aes(x=pos, y=relative_importance, color=to)) +
         geom_line() +
         labs(title="XGBoost blunt regressor", subtitle="Position/Nucleotide importance", y="relative importance", x="protospacer position") +
         scale_color_manual("protospacer is", values=palette()) +
@@ -162,9 +165,12 @@ shinyApp(
         theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1),
               panel.grid.minor=element_blank(),
               legend.position="bottom")
-    })
 
-    output$motif <- renderPlot({
+      file <- htmltools::capturePlot(p, tempfile(fileext=".svg"), grDevices::svg, width=8, heigh=4)
+    })
+    output$variableImportance <- renderImage(list(src=variableImportanceSVG()), deleteFile=TRUE)
+
+    motifSVG <- reactive({
       req(model(), cancelOutput=TRUE)
 
       varimp <- as.data.frame(h2o.varimp(model()))
@@ -182,32 +188,42 @@ shinyApp(
         coefs <- coefs * i
       }
 
-      ggplot() +
+      p <- ggplot() +
         ggseqlogo::geom_logo(coefs, method="custom", seq_type="dna") +
         labs(title="Local explanation of the observed blunt rate",
              y="scaled regression coefficient",
              x="protospacer position") +
         ggseqlogo::theme_logo()
-    })
 
-    output$OEplot <- renderPlot({
+      file <- htmltools::capturePlot(p, tempfile(fileext=".svg"), grDevices::svg, width=8, heigh=4)
+    })
+    output$motif <- renderImage(list(src=motifSVG()), deleteFile=TRUE)
+
+    OEplotSVG <- reactive({
       req(model(), cancelOutput=TRUE)
       
       cvpreds <- h2o.getFrame(model()@model[["cross_validation_holdout_predictions_frame_id"]][["name"]])
       x <- data.frame(expected=as.data.frame(cvpreds)$predict,
                       observed=targets()[[2]])
 
-      opar <- par(mfrow=c(1, 2))
-      smoothScatter(x$expected ~ x$observed, nbin=512, nrpoints=0,
-                    main=paste0("Prediction performance (on cross-valitaded data)\nR=", round(cor(x$observed, x$expected), 2)),
-                    xlab="observed blunt rate", ylab="predicted blunt rate",
-                    colramp=colorRampPalette(c("black", "blue", "cyan", "yellow", "red")))
-      abline(0, 1, col="blue", lty=1, lwd=2)
-      abline(lm(x$expected ~ x$observed), col="blue", lty=2, lwd=2)
+      p1 <- ggplot(x, aes(x=observed, y=expected)) +
+        geom_density_2d_filled(show.legend=FALSE) +
+        geom_smooth(method="lm", color="blue", lty=2) +
+        geom_abline(slope=1, intercept=0, color="blue", lty=1) +
+        labs(title=paste0("Prediction performance (on cross-valitaded data)\nR=", round(cor(x$observed, x$expected), 2)),
+            x="observed blunt rate", y="predicted blunt rate") +
+        theme_bw() +
+        theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank())
 
-      hist(x$observed - x$expected, breaks=100, main="Distribution of residuals")
-      par(opar)
+      p2 <- ggplot(x, aes(x=expected)) +
+        geom_histogram() +
+        labs(title="Distribution of residuals") +
+        theme_bw()
+
+      file <- htmltools::capturePlot(cowplot::plot_grid(p1, p2, cols=2),
+                                     tempfile(fileext=".svg"), grDevices::svg, width=8, heigh=4)
     })
+    output$OEplot <- renderImage(list(src=OEplotSVG()), deleteFile=TRUE)
 
     output$download_model <- downloadHandler("model.h2o", content=function(file) {
       req(model(), cancelOutput=TRUE)
