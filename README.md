@@ -154,9 +154,8 @@ It uses XGBoost and the provided sequence (usually, a protospacer) to predict wh
 The main dependency is [H2O](https://h2o.ai/), which can be installed from CRAN. The app has been tested with H2O version 3.36.1.2.
 
 ```R
-install.packages("h2o")
+install.packages("h2o", type="source", repos="http://h2o-release.s3.amazonaws.com/h2o/rel-zumbo/2/R")
 ```
-
 
 Test the H2O installation with:
 
