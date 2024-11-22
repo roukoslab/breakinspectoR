@@ -55,7 +55,7 @@ shinyApp(
 
     withProgress(message="Loading XBoost regressor model...", value=0, {
       # defaults to the XGBoost regressor trained with HiPlex1 data that we produced with the Nat Biotechnology paper
-      blunt_regressor.xgb <- h2o.loadModel(system.file("extdata/bluntPred.hiplex1.h2o", package="bluntPred"))
+      blunt_regressor.xgb <- h2o.loadModel(system.file("extdata/bluntPred.hiplex1.h2o", package="breakinspectoR"))
     })
 
     # one-hot encode the sequences
@@ -110,7 +110,7 @@ shinyApp(
     })
 
     observeEvent(input$example, {
-      x <- read.delim(system.file("extdata/bluntPred.txt", package="bluntPred"), head=FALSE, sep="\t")
+      x <- read.delim(system.file("extdata/bluntPred.txt", package="breakinspectoR"), head=FALSE, sep="\t")
       x <- paste(apply(x, 1, paste, collapse=","), collapse="\n")
       updateTextInput(session, "gRNAs", value=x)
     })
