@@ -3,6 +3,7 @@ library(shinydashboard)
 library(DT)
 library(h2o)
 
+options(shiny.maxRequestSize = 100 * 1024^2)   # allow uploading models up to 100MB
 NT <- c("A", "C", "G", "T")
 
 shinyApp(
@@ -15,25 +16,30 @@ shinyApp(
     dashboardBody(
       fluidRow(
         column(width=4,
-               box(width=NULL, title="gRNAs", status="warning",
-                   textAreaInput("gRNAs", label="Paste here your gRNAs", height="200px",
-                                 value=paste("# Columns are <tab> or <comma> separated.",
-                                             "# First column is mandatory and must contain gRNA target sequences of at least 10nt.",
-                                             "# Other columns are optional.",
-                                             "# Columns are not named.",
-                                             "# Lines starting with '#' are ignored", sep="\n")
-                   ),
-                   hr(),
-                   fluidRow(column(6, actionLink("predict", "Predict!")),
-                            column(6, actionLink("example", "example"), align="right"),
-                   ),
-               )
+          box(width=NULL, title="gRNAs", status="warning",
+            textAreaInput("gRNAs", label="Paste here your gRNAs", height="200px",
+                          value=paste("# Columns are <tab> or <comma> separated.",
+                                      "# First column is mandatory and must contain gRNA target sequences.",
+                                      "# If using the default model used in the Nat Biotech paper, sequences must be at least 10nt.",
+                                      "# If using a custom model, sequences must be the same length as in the training set.",
+                                      "# Build custom models using the companion breakinspectoR::shiny_BTmotif() app.",
+                                      "# Other columns are optional.",
+                                      "# Columns are not named.",
+                                      "# Lines starting with '#' are ignored", sep="\n")
+            ),
+            fluidRow(column(12, actionLink("example", "example"), align="right")),
+            hr(),
+            fluidRow(
+              column(6, actionButton("predict", "Predict!", icon=icon("play")), align="left"),
+              column(6, fileInput("uploadModel", "Upload a custom model", accept=".h2o"), align="right")
+            )
+          )
         ),
         column(width=8,
-               box(width=NULL, title="Predicted table", status="warning",
-                   div(style='overflow-x: scroll', DTOutput("predTable")),
-                   downloadLink("downloadPredTable", "Download predicted table")
-               )#{{Impressum-placeholder}}
+          box(width=NULL, title="Predicted table", status="warning",
+            div(style='overflow-x: scroll', DTOutput("predTable")),
+            downloadButton("downloadPredTable", "Download predicted table")
+          )#{{Impressum-placeholder}}
         )
       )
     )
@@ -53,12 +59,25 @@ shinyApp(
     })
     onStop(function() h2o.shutdown(prompt=FALSE))
 
-    withProgress(message="Loading XBoost regressor model...", value=0, {
+    # load models
+    model <- reactiveValues()
+    withProgress(message="Loading default spCas9 XBoost regressor model trained with Hiplex1 data...", value=0, {
       # defaults to the XGBoost regressor trained with HiPlex1 data that we produced with the Nat Biotechnology paper
-      blunt_regressor.xgb <- h2o.loadModel(system.file("extdata/bluntPred.hiplex1.h2o", package="breakinspectoR"))
+      model$h2o     <- h2o.loadModel(system.file("extdata/bluntPred.hiplex1.h2o", package="breakinspectoR"))
+      model$default <- TRUE
+      model$default_columns <- isolate(model$h2o@model$names)
     })
 
-    # one-hot encode the sequences
+    observe({
+      req(input$uploadModel, cancelOutput=TRUE)
+      withProgress(message="Loading custom model...", value=0, {
+        model$h2o <- h2o.loadModel(input$uploadModel$datapath)
+        model$default <- length(isolate(model$h2o@model$names)) == length(isolate(model$default_columns)) &&
+                         all(isolate(model$h2o@model$names) == isolate(model$default_columns))
+      })
+    })
+
+    # one-hot encode the sequences as in the Nat Biotech paper
     onehot <- function(x, y) {    # onehot a sequence of nt
       onehot1 <- function(x, y) { # onehot one single nt
         if(y == "N") {
@@ -75,6 +94,18 @@ shinyApp(
       unname(do.call(c, Map(unlist(strsplit(x, "")), unlist(strsplit(y, "")), f=onehot1)))
     }
     onehotV <- Vectorize(onehot)
+
+    # one-hot encode the sequences as in shiny_BTmotif, for custom models
+    # the main difference is that here we use the whole protospacer and we don't include mismatches between protospacer-sgRNA
+    onehot2 <- function(x) {    # onehot a sequence of nt
+      onehot1 <- function(x) {
+        m <- setNames(integer(4), NT)
+        m[x] <- 1
+        m
+      }
+      unname(do.call(c, lapply(unlist(strsplit(x, "")), onehot1)))
+    }
+    onehot2V <- Vectorize(onehot2, SIMPLIFY=FALSE)
 
     #
     # reactive components -----
@@ -93,15 +124,33 @@ shinyApp(
       withProgress(message="Predicting blunt rates, this may take a while...", value=0, {
         tryCatch({
           # encode
-          guide10 <- toupper(substr(gRNAs()[[1]], 11, 20))
-          onehot10 <- as.list(as.data.frame(onehotV(guide10, guide10)))
+          # support either the model trained with Hiplex data for the Nat Biotech paper included by default in this app (last 10 nt)
+          # and support custom models trained with the shiny_BTmotif() app included in this paper
+          if(isolate(model$default)) {
+            validate(need(all(nchar(gRNAs()[[1]]) >= 10), "Length of predicted sequences must be at least 10nt for the default Hiplex 1 model"))
+            guide <- toupper(substr(gRNAs()[[1]], nchar(gRNAs()[[1]]) - 10 + 1, nchar(gRNAs()[[1]])))
+            onehot <- as.list(as.data.frame(onehotV(guide, guide)))
+            df <- as.data.frame(t(as.data.frame(onehot)))
+            rownames(df) <- NULL
+            colnames(df) <- paste("p", paste(rep(1:10, each=16), paste(NT, rep(NT, each=4), sep="_instead_of_"), sep="_"), sep="_")
+          } else {
+            n_training_vars <- (length(isolate(model$h2o@model$names)) - 1) / 4  # length of sequences in the training set
+            validate(need(all(nchar(gRNAs()[[1]]) >= n_training_vars), paste("Length of predicted sequences must be at least", n_training_vars, "nt for this custom model")))
+            guide <- toupper(gRNAs()[[1]])                   # use the whole sequence
+            onehot <- as.list(as.data.frame(onehot2V(guide)))
+            df <- as.data.frame(t(as.data.frame(onehot)))
+            rownames(df) <- NULL
+            colnames(df) <- paste("p", paste(rep(1:nchar(gRNAs()[[1]][1]), each=4), NT, sep="_"), sep="_")
+          }
 
           # predict the outcome for each gRNA
-          df <- as.data.frame(t(as.data.frame(onehot10)))
-          rownames(df) <- NULL
-          colnames(df) <- paste("p", paste(rep(1:10, each=16), paste(NT, rep(NT, each=4), sep="_instead_of_"), sep="_"), sep="_")
           df.h2o <- as.h2o(df)
-          blunt_rate <- h2o.predict(blunt_regressor.xgb, df.h2o)
+          blunt_rate <- tryCatch({
+            h2o.predict(isolate(model$h2o), df.h2o)
+          }, error=function(e) {
+            NULL
+          })
+          validate(need(!is.null(blunt_rate), "Prediction failed. Ensure the length of the predicted sequences matches the length of the training sequences"))
           x <- cbind(round(as.data.frame(blunt_rate)$predict, digits=2), gRNAs())
           colnames(x)[1] <- "predicted blunt rate"
           x
