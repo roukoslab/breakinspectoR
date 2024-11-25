@@ -78,7 +78,7 @@ shinyApp(
     })
 
     # one-hot encode the sequences as in the Nat Biotech paper
-    onehot <- function(x, y) {    # onehot a sequence of nt
+    onehotV <- Vectorize(function(x, y) {    # onehot a sequence of nt
       onehot1 <- function(x, y) { # onehot one single nt
         if(y == "N") {
           y <- x  # nt "N" in `y` always match `x` (eg, NGG protospacer, N will always match)
@@ -93,19 +93,17 @@ shinyApp(
 
       unname(do.call(c, Map(unlist(strsplit(x, "")), unlist(strsplit(y, "")), f=onehot1)))
     }
-    onehotV <- Vectorize(onehot)
 
     # one-hot encode the sequences as in shiny_BTmotif, for custom models
     # the main difference is that here we use the whole protospacer and we don't include mismatches between protospacer-sgRNA
-    onehot2 <- function(x) {    # onehot a sequence of nt
+    onehot2V <- Vectorize(function(x) {    # onehot a sequence of nt
       onehot1 <- function(x) {
         m <- setNames(integer(4), NT)
         m[x] <- 1
         m
       }
       unname(do.call(c, lapply(unlist(strsplit(x, "")), onehot1)))
-    }
-    onehot2V <- Vectorize(onehot2, SIMPLIFY=FALSE)
+    }, SIMPLIFY=FALSE)
 
     #
     # reactive components -----
