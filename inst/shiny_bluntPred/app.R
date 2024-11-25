@@ -92,7 +92,7 @@ shinyApp(
       }
 
       unname(do.call(c, Map(unlist(strsplit(x, "")), unlist(strsplit(y, "")), f=onehot1)))
-    }
+    })
 
     # one-hot encode the sequences as in shiny_BTmotif, for custom models
     # the main difference is that here we use the whole protospacer and we don't include mismatches between protospacer-sgRNA
