@@ -64,7 +64,6 @@ shinyApp(
       # install.packages("h2o", type="source", repos="http://h2o-release.s3.amazonaws.com/h2o/rel-zumbo/2/R")
       h2o.init()
     })
-    onStop(function() h2o.shutdown(prompt=FALSE))
 
     # one-hot encode the sequences
     # simpler version which doesn't take into account protospacer-sgRNA mismatches as in the NatBiotech paper
@@ -117,6 +116,13 @@ shinyApp(
           predictors <- setdiff(colnames(df), response)
 
           # Train blunt/staggered regression model
+          tryCatch({    # check that h2o server is still running
+            h2o.init(startH2O=FALSE)
+          }, error=function(e) {
+            withProgress(message="Initializing H2O...", value=0, {
+              h2o.init()
+            })
+          })
           df.h2o <- as.h2o(df)
           h2o.xgboost(x=predictors,
                       y=response,
@@ -151,6 +157,13 @@ shinyApp(
     #
     variableImportanceSVG <- reactive({
       req(model(), cancelOutput=TRUE)
+      tryCatch({    # check that h2o server is still running
+        h2o.init(startH2O=FALSE)
+      }, error=function(e) {
+        withProgress(message="Initializing H2O...", value=0, {
+          h2o.init()
+        })
+      })
 
       varimp <- as.data.frame(h2o.varimp(model()))
       varimp$pos  <- as.numeric(sub("^p_(\\d+)_([ACTG])", "\\1", as.character(varimp$variable)))
@@ -172,6 +185,13 @@ shinyApp(
 
     motifSVG <- reactive({
       req(model(), cancelOutput=TRUE)
+      tryCatch({    # check that h2o server is still running
+        h2o.init(startH2O=FALSE)
+      }, error=function(e) {
+        withProgress(message="Initializing H2O...", value=0, {
+          h2o.init()
+        })
+      })
 
       varimp <- as.data.frame(h2o.varimp(model()))
       varimp$pos  <- as.numeric(sub("^p_(\\d+)_([ACTG])", "\\1", as.character(varimp$variable)))
@@ -201,6 +221,13 @@ shinyApp(
 
     OEplotSVG <- reactive({
       req(model(), cancelOutput=TRUE)
+      tryCatch({    # check that h2o server is still running
+        h2o.init(startH2O=FALSE)
+      }, error=function(e) {
+        withProgress(message="Initializing H2O...", value=0, {
+          h2o.init()
+        })
+      })
       
       cvpreds <- h2o.getFrame(model()@model[["cross_validation_holdout_predictions_frame_id"]][["name"]])
       x <- data.frame(expected=as.data.frame(cvpreds)$predict,
@@ -227,6 +254,13 @@ shinyApp(
 
     output$download_model <- downloadHandler("model.h2o", content=function(file) {
       req(model(), cancelOutput=TRUE)
+      tryCatch({    # check that h2o server is still running
+        h2o.init(startH2O=FALSE)
+      }, error=function(e) {
+        withProgress(message="Initializing H2O...", value=0, {
+          h2o.init()
+        })
+      })
       h2o.saveModel(model(), force=TRUE, export_cross_validation_predictions=TRUE, filename=file)
     })
   }

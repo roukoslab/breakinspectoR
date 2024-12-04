@@ -57,7 +57,6 @@ shinyApp(
       # install.packages("h2o", type="source", repos="http://h2o-release.s3.amazonaws.com/h2o/rel-zumbo/2/R")
       h2o.init()
     })
-    onStop(function() h2o.shutdown(prompt=FALSE))
 
     # load models
     model <- reactiveValues()
@@ -70,6 +69,13 @@ shinyApp(
 
     observe({
       req(input$uploadModel, cancelOutput=TRUE)
+      tryCatch({    # check that h2o server is still running
+        h2o.init(startH2O=FALSE)
+      }, error=function(e) {
+        withProgress(message="Initializing H2O...", value=0, {
+          h2o.init()
+        })
+      })
       withProgress(message="Loading custom model...", value=0, {
         model$h2o <- h2o.loadModel(input$uploadModel$datapath)
         model$default <- length(isolate(model$h2o@model$names)) == length(isolate(model$default_columns)) &&
@@ -142,6 +148,13 @@ shinyApp(
           }
 
           # predict the outcome for each gRNA
+          tryCatch({    # check that h2o server is still running
+            h2o.init(startH2O=FALSE)
+          }, error=function(e) {
+            withProgress(message="Initializing H2O...", value=0, {
+              h2o.init()
+            })
+          })
           df.h2o <- as.h2o(df)
           blunt_rate <- tryCatch({
             h2o.predict(isolate(model$h2o), df.h2o)
