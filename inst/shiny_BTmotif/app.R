@@ -35,6 +35,16 @@ shinyApp(
               column(6, actionButton("go", "Go!", icon=icon("play")), align="left"),
               column(6, shinyjs::disabled(downloadButton("download_model", "Download model")), align="right")
             )
+          ),
+          box(width=NULL, 
+              tagList("If you use this application in your research", strong("please cite us!.")),
+              br(), br(),
+              tagList("Longo, G.M.C., Sayols, S., Kotini, A.G. et al. Linking CRISPR–Cas9 double-strand break profiles to gene editing precision with BreakTag. Nat Biotechnol 43, 608–622 (2025).", a("doi.org/10.1038/s41587-024-02238-8", href="https://doi.org/10.1038/s41587-024-02238-8")),
+              br(), br(),
+              tagList("Longo, G.M.C., Sayols, S. & Roukos, V. Multilevel characterization of genome editor nuclease activity with BreakTag. Nat Protoc (2025).", a("doi.org/10.1038/s41596-025-01271-4", href="https://doi.org/10.1038/s41596-025-01271-4")),
+              br(), br(),
+              tagList(a("Roukos Lab (Patras, Greece)", href="https://roukoslab.com/"), "and",
+                      a("(Mainz, Germany)", href="https://imb.de/research/roukos/research"))
           )
         ),
         column(width=8,
