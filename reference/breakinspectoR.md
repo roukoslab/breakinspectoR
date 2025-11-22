@@ -1,0 +1,131 @@
+# breakinspectoR
+
+Looks for enriched DNA regions targeted for cleavage by the CRISPR
+system
+
+## Usage
+
+``` r
+breakinspectoR(
+  target,
+  nontarget = GRanges(),
+  guide,
+  PAM = c("NAG", "NGG"),
+  mismatches = 7,
+  cutsiteFromPAM = 3,
+  min_breaks = 2,
+  standard_chromosomes = TRUE,
+  bsgenome = "BSgenome.Hsapiens.UCSC.hg38",
+  eFDR = TRUE,
+  scale_nontarget = FALSE,
+  seed = 666,
+  cores = getOption("mc.cores", 2L),
+  verbose = TRUE
+)
+```
+
+## Arguments
+
+- target:
+
+  GRanges object with coordinates of breaks in the targeted library, or
+  a character with the path to a bed file.
+
+- nontarget:
+
+  GRanges object with coordinates of breaks in the non-targeted library,
+  or the path to a bed file. Default: empty GRanges() object, which is
+  equivalent to not having a control library.
+
+- guide:
+
+  character vector with the guide RNA sequence.
+
+- PAM:
+
+  character vector with the sequence of the protospacer adjacent
+  motif(s).
+
+- mismatches:
+
+  numeric, mismatches allowed between the guide and the genomic
+  sequence.
+
+- cutsiteFromPAM:
+
+  distance of the cutsite from the PAM.
+
+- min_breaks:
+
+  minimum number of breaks in the cutsite to be considered for the
+  analysis.
+
+- standard_chromosomes:
+
+  logical, constrain the analysis to standard chromosomes only (defaults
+  to TRUE).
+
+- bsgenome:
+
+  character, bsgenome to use (eg. BSgenome.Hsapiens.UCSC.hg38).
+
+- eFDR:
+
+  logical, estimate the empirical false discovery rate.
+
+- scale_nontarget:
+
+  logical, scale the nontarget library to the size of the target
+  library. Useful if target and nontarget libraries were sequenced at
+  different depths. Defaults to FALSE.
+
+- seed:
+
+  numeric, seed for random number generator. Disable with NA.
+
+- cores:
+
+  Use multiple cores. Defaults to 2 cores, and the function won't
+  benefit of adding \>2. Nevertheless, the speedup with 2 cores is
+  considerable.
+
+- verbose:
+
+  logical, keep informing about every step.
+
+## Value
+
+a GRanges object with the coordinates of the enriched regions, with
+number of breaks detected, the cut site, the enrichment over the
+non-targeted library and the p-value of the statistical test.
+
+## Examples
+
+``` r
+## this is needed only for the package to install
+if (requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly=TRUE)) {
+##
+  offtargets <- breakinspectoR(
+    target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
+    nontarget=system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR"),
+    guide    ="GACCCCCTCCACCCCGCCTC",
+    PAM      =c("NGG", "NAG"),
+    bsgenome ="BSgenome.Hsapiens.UCSC.hg38",
+    eFDR     =FALSE,
+    cutsiteFromPAM=3)
+}
+#> Setting seed for random number generation...
+#>  done
+#> Loading BSgenome.Hsapiens.UCSC.hg38...
+#>  done
+#> Importing breaks...
+#>  done
+#> Obtaining sequence context...
+#>  done
+#> Filtering out candidates without PAM or too many mismatches...
+#>  done
+#> Counting breaks at each offtarget region...
+#>  done
+#> Calculating probabilities...
+#>  done
+```
