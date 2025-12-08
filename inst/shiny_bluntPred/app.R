@@ -14,6 +14,7 @@ shinyApp(
     dashboardHeader(
       title=
         tagList(
+          tags$head(tags$title("BreakInspector – Blunt rate prediction")),  # Browser-tab title
           tags$img(
             src = "breakinspector.png",     # file under ./www/
             height = "45px",

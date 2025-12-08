@@ -15,6 +15,7 @@ shinyApp(
     dashboardHeader(
       title=
         tagList(
+          tags$head(tags$title("BreakInspector – BT motif: extract sequence determinants")),  # Browser-tab title
           tags$img(
             src = "breakinspector.png",     # file under ./www/
             height = "45px",
