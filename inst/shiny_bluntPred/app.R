@@ -11,7 +11,18 @@ shinyApp(
   # Define UI -------
   #
   ui=dashboardPage(
-    dashboardHeader(title="Blunt rate prediction (Chakrabarti's)", titleWidth=300),
+    dashboardHeader(
+      title=
+        tagList(
+          tags$img(
+            src = "breakinspector.png",     # file under ./www/
+            height = "45px",
+            style = "margin-right:10px; vertical-align:middle;"
+          ),
+          span("Blunt rate prediction", style="vertical-align:middle;")
+        ),
+      titleWidth=350
+    ),
     dashboardSidebar(disable=TRUE),
     dashboardBody(
       fluidRow(
@@ -35,7 +46,7 @@ shinyApp(
             )
           ),
           box(width=NULL, 
-              tagList("If you use this application in your research", strong("please cite us!.")),
+              tagList("If you use this application in your research", strong("please cite us!")),
               br(), br(),
               tagList("Longo, G.M.C., Sayols, S., Kotini, A.G. et al. Linking CRISPR–Cas9 double-strand break profiles to gene editing precision with BreakTag. Nat Biotechnol 43, 608–622 (2025).", a("doi.org/10.1038/s41587-024-02238-8", href="https://doi.org/10.1038/s41587-024-02238-8")),
               br(), br(),

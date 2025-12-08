@@ -12,7 +12,18 @@ shinyApp(
   # Define UI -------
   #
   ui=dashboardPage(
-    dashboardHeader(title="BTmotif: Extract sequence determinants", titleWidth=500),
+    dashboardHeader(
+      title=
+        tagList(
+          tags$img(
+            src = "breakinspector.png",     # file under ./www/
+            height = "45px",
+            style = "margin-right:10px; vertical-align:middle;"
+          ),
+          span("BTmotif: Extract sequence determinants", style="vertical-align:middle;"),
+        ),
+      titleWidth=550
+    ),
     dashboardSidebar(disable=TRUE),
     dashboardBody(
       fluidRow(
@@ -37,7 +48,7 @@ shinyApp(
             )
           ),
           box(width=NULL, 
-              tagList("If you use this application in your research", strong("please cite us!.")),
+              tagList("If you use this application in your research", strong("please cite us!")),
               br(), br(),
               tagList("Longo, G.M.C., Sayols, S., Kotini, A.G. et al. Linking CRISPR–Cas9 double-strand break profiles to gene editing precision with BreakTag. Nat Biotechnol 43, 608–622 (2025).", a("doi.org/10.1038/s41587-024-02238-8", href="https://doi.org/10.1038/s41587-024-02238-8")),
               br(), br(),
@@ -72,7 +83,8 @@ shinyApp(
       # Require h2o 3.36.1.2 for the breaktag predictor
       # https://stackoverflow.com/questions/64801593/get-specific-h2o-version-in-r
       # install.packages("h2o", type="source", repos="http://h2o-release.s3.amazonaws.com/h2o/rel-zumbo/2/R")
-      h2o.init()
+#      h2o.init()
+      return()
     })
 
     # one-hot encode the sequences
