@@ -83,8 +83,7 @@ shinyApp(
       # Require h2o 3.36.1.2 for the breaktag predictor
       # https://stackoverflow.com/questions/64801593/get-specific-h2o-version-in-r
       # install.packages("h2o", type="source", repos="http://h2o-release.s3.amazonaws.com/h2o/rel-zumbo/2/R")
-#      h2o.init()
-      return()
+      h2o.init()
     })
 
     # one-hot encode the sequences
