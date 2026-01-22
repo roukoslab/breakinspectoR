@@ -6,7 +6,7 @@ guided search toward putative on-/off-targets.
 
 ## Overall description
 
-![breakinspectoR workflow](assets/breakinspectoR_wf.png)
+![breakinspectoR workflow](assets/breakinspectoR_wf2.png)
 
 breakinspectoR workflow
 
