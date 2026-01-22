@@ -4,7 +4,7 @@ breakinspectoR is an R package which performs a guided search toward putative on
 
 ## Overall description
 
-![breakinspectoR workflow](assets/breakinspectoR_wf.png)
+![breakinspectoR workflow](assets/breakinspectoR_wf2.png)
 
 ### Initial preprocessing
 
