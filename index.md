@@ -86,6 +86,7 @@ Open R and install directly from Github with `devtools` (install the
 package `devtools` if you haven’t, yet):
 
 ``` r
+
 devtools::install_github("roukoslab/breakinspectoR")
 ```
 
@@ -101,6 +102,7 @@ default 7 mismatches allowed to the guide, with the expected cut site 3
 bp away from the PAM (Cas9).
 
 ``` r
+
 target_file     <- system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR")
 non_target_file <- system.file("extdata/nontarget.chr6.bed.gz", package="breakinspectoR")
 guide           <- "GACCCCCTCCACCCCGCCTC"
@@ -123,6 +125,7 @@ comprehensive table with few hundred enriched offtarget loci, which we
 can summarize using the accompanying plotting functions:
 
 ``` r
+
 plot_position_cutsite(offtargets, guide=guide, pam=PAM["canonical"])
 plot_mismatch_freq(offtargets)
 plot_offtargets_by_pam(offtargets)
@@ -149,6 +152,7 @@ several visualizations to analyze DSB end structure as determined by
 BreakTag.
 
 ``` r
+
 offtargets.scission_profile <- scission_profile_analysis(
   x        =offtargets,
   target   =system.file("extdata/vegfa.chr6.bed.gz", package="breakinspectoR"),
@@ -159,6 +163,7 @@ offtargets.scission_profile <- scission_profile_analysis(
 Along with several useful visualizations:
 
 ``` r
+
 # simulate 2 different experiments by picking 25 random offtargets
 spcas9 <- sample(offtargets.scission_profile, 25)
 lz3    <- sample(offtargets.scission_profile, 25)
@@ -212,12 +217,14 @@ The main dependency is [H2O](https://h2o.ai/), which can be installed
 from CRAN. The app has been tested with H2O version 3.36.1.2.
 
 ``` r
+
 install.packages("h2o", type="source", repos="http://h2o-release.s3.amazonaws.com/h2o/rel-zumbo/2/R")
 ```
 
 Test the H2O installation with:
 
 ``` r
+
 library(h2o)
 localH2O = h2o.init()
 demo(h2o.kmeans)
@@ -226,6 +233,7 @@ demo(h2o.kmeans)
 You’ll need a couple of packages to run the web app:
 
 ``` r
+
 install.packages("shiny")
 install.packages("shinydashboard")
 ```
@@ -233,6 +241,7 @@ install.packages("shinydashboard")
 To generate the motifs, you’ll also need `ggplot2` and `ggseqlogo`:
 
 ``` r
+
 install.packages("ggplot2")
 devtools::install_github("omarwagih/ggseqlogo")
 ```
@@ -242,6 +251,7 @@ devtools::install_github("omarwagih/ggseqlogo")
 Open the web app in your R console:
 
 ``` r
+
 breakinspectoR::shiny_BTmotif()
 ```
 
@@ -267,6 +277,7 @@ The main dependency is [H2O](https://h2o.ai/).
 Remove any previously installed H2O packages for R.
 
 ``` r
+
 if ("package:h2o" %in% search()) { detach("package:h2o", unload=TRUE) }
 if ("h2o" %in% rownames(installed.packages())) { remove.packages("h2o") }
 ```
@@ -274,6 +285,7 @@ if ("h2o" %in% rownames(installed.packages())) { remove.packages("h2o") }
 Download packages that H2O depends on.
 
 ``` r
+
 install.packages(c("RCurl","jsonlite", "devtools"))
 ```
 
@@ -281,12 +293,14 @@ Download and install the H2O package for R. The models were trained on
 H2O version 3.36.1.2, therefore specifically install this version.
 
 ``` r
+
 install.packages("h2o", type="source", repos="http://h2o-release.s3.amazonaws.com/h2o/rel-zumbo/2/R")
 ```
 
 Test the H2O installation with:
 
 ``` r
+
 library(h2o)
 localH2O = h2o.init()
 demo(h2o.kmeans)
@@ -298,6 +312,7 @@ The package resides in GitHub only. You will probably need `devtools`
 for that (`install.packages("devtools")`).
 
 ``` r
+
 devtools::install_github("roukoslab/bluntPred")
 ```
 
@@ -306,6 +321,7 @@ devtools::install_github("roukoslab/bluntPred")
 Open the web app in your R console:
 
 ``` r
+
 bluntPred::shiny_bluntPred()
 ```
 
