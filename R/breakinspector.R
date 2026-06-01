@@ -421,6 +421,7 @@ read_targets <- function(x, genome, standard_chromosomes, strandless) {
 #'
 #' @param x A GRanges object containing the results of a breakinspectoR
 #' analysis.
+#' @param guide character vector with the guide RNA sequence.
 #' @param fdr numerical, keep only hits below this empirical FDR threshold.
 #' @param qval numerical, keep only hits below this q-value threshold.
 #' @param mismatches numeric, mismatches allowed between the guide and the
@@ -453,9 +454,9 @@ read_targets <- function(x, genome, standard_chromosomes, strandless) {
 #' }
 #' data(breakinspectoR_examples)
 #'
-#' offtargets_filtered <- reduceOT(offtargets)
+#' offtargets_filtered <- reduceOT(offtargets, guide)
 #'
-reduceOT <- function(x, fdr=.01, qval=.01, mismatches=7, standard_chromosomes=TRUE,
+reduceOT <- function(x, guide, fdr=.01, qval=.01, mismatches=7, standard_chromosomes=TRUE,
                    cores=getOption("mc.cores", 2L),
                    verbose=TRUE) {
 
@@ -476,6 +477,11 @@ reduceOT <- function(x, fdr=.01, qval=.01, mismatches=7, standard_chromosomes=TR
        x[x$mismatches <= mismatches]
     }, error=function(e) x)
   msg(verbose, " done", appendLF=TRUE)
+
+  # return if GRanges object is empty
+  if (length(x) == 0) {
+    return(x)
+  }
 
   # merge different OT in same protospacer
   msg(verbose, "Merging different OT in same protospacer...", appendLF=FALSE)
